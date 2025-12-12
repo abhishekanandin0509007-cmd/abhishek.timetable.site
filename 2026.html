@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MISSION BOARD EXAM</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #62B3B2; /* Background color */
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+        color: #333;
+        min-height: 100vh;
+    }
+
+    h1 {
+        color: #006400; /* Dark green heading */
+        text-shadow: 1px 1px #aaa;
+        margin-bottom: 20px;
+    }
+
+    #countdown {
+        background-color: #B36262; /* Countdown box color */
+        color: #fff;
+        padding: 20px 40px;
+        border-radius: 12px;
+        display: inline-block;
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    }
+
+    #motivation {
+        font-size: 1.5em;
+        font-weight: 900;
+        color: #006400;
+        margin: 20px auto;
+        text-align: center;
+        background: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-block;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+    }
+
+    .day-list {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 0;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.2);
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 0; /* Remove padding to remove white space */
+        border: 1px solid #aaa;
+        text-align: center;
+    }
+
+    th {
+        background-color: #006400;
+        color: white;
+        padding: 8px 10px;
+    }
+
+    input[type="text"], input[type="number"] {
+        width: 100%;
+        height: 100%;
+        border: none;
+        padding: 5px;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        text-align: center;
+        outline: none;
+    }
+
+    input[type="checkbox"] {
+        transform: scale(1.2);
+    }
+
+    #totalHours {
+        margin-top: 20px;
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #006400;
+    }
+
+    #saveBtn {
+        margin-bottom: 20px;
+        padding: 10px 25px;
+        font-size: 1.2em;
+        border-radius: 8px;
+        border: none;
+        background-color: #2e8b57;
+        color: white;
+        cursor: pointer;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    #saveBtn:hover {
+        background-color: #006400;
+    }
+</style>
+</head>
+<body>
+<h1>MISSION BOARD EXAM</h1>
+<button id="saveBtn">Save All</button>
+<div id="countdown">Loading...</div>
+<div id="motivation">No matter what happens in life, be good to people.</div>
+<div class="day-list" id="dayList">
+    <table>
+        <thead>
+            <tr>
+                <th>Done</th>
+                <th>Date</th>
+                <th>Daily Goal</th>
+                <th>Study Time (hrs)</th>
+                <th>Row Total</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+<div id="totalHours">Total Study Hours: 0</div>
+
+<script>
+const quotes = [
+    "No matter what happens in life, be good to people.",
+    "Success is the sum of small efforts repeated day in and day out.",
+    "Don’t stop when you’re tired. Stop when you’re done.",
+    "Dreams don’t work unless you do.",
+    "Learning never exhausts the mind.",
+    "Live as if you were to die tomorrow. Learn as if you were to live forever."
+];
+document.getElementById("motivation").innerText = quotes[Math.floor(Math.random()*quotes.length)];
+
+const countdownEl = document.getElementById('countdown');
+const targetDate = new Date('2026-02-17T00:00:00');
+function updateCountdown() {
+    const now = new Date();
+    const diff = targetDate - now;
+    if(diff <=0){
+        countdownEl.textContent="EXAMS STARTED!";
+        return;
+    }
+    const days=Math.floor(diff/(1000*60*60*24));
+    const hours=Math.floor((diff/(1000*60*60))%24);
+    countdownEl.textContent=`${days} Days ${hours} Hours`;
+}
+setInterval(updateCountdown,1000);
+updateCountdown();
+
+const startDate = new Date('2025-12-12');
+const endDate = new Date('2026-02-17');
+const tableBody = document.getElementById('tableBody');
+const totalHoursEl = document.getElementById('totalHours');
+const colors = ['#ff9999','#99ccff','#99ff99','#ffcc99','#ffccff','#ffff99','#99ffff','#ffb3b3','#b3ffb3','#b3d9ff'];
+
+let dayCounter=1;
+for(let d=new Date(startDate);d<=endDate;d.setDate(d.getDate()+1)){
+    const dateStr=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const row=document.createElement('tr');
+
+    const checkboxCell=document.createElement('td');
+    const checkbox=document.createElement('input');
+    checkbox.type='checkbox';
+    checkbox.checked=JSON.parse(localStorage.getItem('day'+dayCounter))||false;
+    checkboxCell.style.backgroundColor=colors[(dayCounter-1)%colors.length];
+    checkboxCell.appendChild(checkbox);
+
+    const dateCell=document.createElement('td');
+    dateCell.textContent=dateStr;
+    dateCell.style.backgroundColor=colors[(dayCounter-1)%colors.length];
+
+    const goalCell=document.createElement('td');
+    const goalInput=document.createElement('input');
+    goalInput.type='text';
+    goalInput.placeholder='Write your daily goal';
+    goalInput.value=localStorage.getItem('goal'+dayCounter)||'';
+    goalInput.style.backgroundColor=colors[(dayCounter-1)%colors.length];
+    goalInput.style.fontWeight='bold';
+    goalInput.style.fontFamily='Arial, sans-serif';
+    goalInput.style.textAlign='center';
+    goalCell.appendChild(goalInput);
+
+    const timeCell=document.createElement('td');
+    const timeInput=document.createElement('input');
+    timeInput.type='number';
+    timeInput.min=0;
+    timeInput.step=0.5;
+    timeInput.placeholder='Hours';
+    timeInput.value=localStorage.getItem('time'+dayCounter)||'';
+    timeInput.style.backgroundColor=colors[(dayCounter-1)%colors.length];
+    timeCell.appendChild(timeInput);
+
+    const rowTotalCell=document.createElement('td');
+    rowTotalCell.textContent=timeInput.value||0;
+    rowTotalCell.style.backgroundColor=colors[(dayCounter-1)%colors.length];
+
+    timeInput.addEventListener('input',function(){
+        rowTotalCell.textContent=timeInput.value||0;
+        updateTotalHours();
+    });
+
+    row.appendChild(checkboxCell);
+    row.appendChild(dateCell);
+    row.appendChild(goalCell);
+    row.appendChild(timeCell);
+    row.appendChild(rowTotalCell);
+
+    tableBody.appendChild(row);
+    dayCounter++;
+}
+
+function updateTotalHours(){
+    let sum=0;
+    const timeInputs=tableBody.querySelectorAll('input[type="number"]');
+    timeInputs.forEach(input=>sum+=parseFloat(input.value)||0);
+    totalHoursEl.textContent="Total Study Hours: "+sum;
+}
+
+updateTotalHours();
+
+document.getElementById('saveBtn').addEventListener('click',function(){
+    const rows=tableBody.querySelectorAll('tr');
+    rows.forEach((row,index)=>{
+        const checkbox=row.querySelector('input[type="checkbox"]');
+        const goalInput=row.querySelector('input[type="text"]');
+        const timeInput=row.querySelector('input[type="number"]');
+        localStorage.setItem('day'+(index+1),checkbox.checked);
+        localStorage.setItem('goal'+(index+1),goalInput.value);
+        localStorage.setItem('time'+(index+1),timeInput.value);
+    });
+    alert("All data saved successfully!");
+});
+
+window.onload=function(){
+    const rows=tableBody.querySelectorAll('tr');
+    rows.forEach((row,index)=>{
+        const checkbox=row.querySelector('input[type="checkbox"]');
+        const goalInput=row.querySelector('input[type="text"]');
+        const timeInput=row.querySelector('input[type="number"]');
+        const rowTotal=row.querySelector('td:last-child');
+        checkbox.checked=JSON.parse(localStorage.getItem('day'+(index+1)))||false;
+        goalInput.value=localStorage.getItem('goal'+(index+1))||'';
+        timeInput.value=localStorage.getItem('time'+(index+1))||'';
+        rowTotal.textContent=timeInput.value||0;
+    });
+    updateTotalHours();
+}
+</script>
+</body>
+</html>
